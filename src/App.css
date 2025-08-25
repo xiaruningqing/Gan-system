@@ -1,0 +1,68 @@
+:root {
+  --gan-bg: #0b0f19;
+  --gan-surface: #121826;
+  --gan-primary: #7c4dff;
+  --gan-accent: #26c6da;
+  --gan-text: #e6e8ee;
+  --gan-muted: #9aa1b2;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100vh; width: 100vw; overflow-x: hidden; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--gan-bg);
+  color: var(--gan-text);
+}
+
+.App { 
+  display: flex; 
+  height: 100vh;
+  width: 100vw;
+}
+.main-content { 
+  flex: 1; 
+  transition: margin-left .2s ease;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.main-content:not(.overview-page) {
+  padding: 20px 32px;
+}
+
+.main-content.overview-page {
+  padding: 0;
+}
+
+.section {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 24px 32px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+h1, h2, h3 { margin: 8px 0 16px; }
+.text-muted { color: var(--gan-muted); }
+.link { color: var(--gan-accent); text-decoration: none; }
+.link:hover { text-decoration: underline; }
+
+/* React Flow 节点样式覆盖 - 去掉白色背景 */
+.react-flow__node-default,
+.react-flow__node-input,
+.react-flow__node-output,
+.react-flow__node-group {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+/* 确保所有React Flow节点都没有白色背景 */
+.react-flow__node {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
