@@ -1450,9 +1450,12 @@
 
 .balance-zones {
   display: flex;
-  height: 8px;
+  /* 之前的固定 8px 高度会导致文字被裁剪，这里改为自适应高度 */
+  height: auto;
+  min-height: 28px;
   border-radius: 4px;
   overflow: hidden;
+  align-items: stretch;
 }
 
 .zone {
@@ -1460,10 +1463,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: white;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  /* 保证文本不被裁剪并完整展示 */
+  padding: 0 10px;
+  white-space: nowrap;
 }
 
 .zone.danger {
