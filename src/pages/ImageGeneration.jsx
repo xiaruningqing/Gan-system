@@ -265,6 +265,8 @@ export default function ImageGeneration() {
   const [isRunning, setIsRunning] = useState(false)
   const [runResults, setRunResults] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
+  // 固定MNIST数字，确保每轮训练显示相同的数字
+  const [fixedDigits, setFixedDigits] = useState([])
   
 
 
@@ -272,6 +274,17 @@ export default function ImageGeneration() {
   React.useEffect(() => {
     setAvailableBlocks(codeBlocks.map(block => block.id))
   }, [codeBlocks])
+
+  // 初始化固定的MNIST数字
+  React.useEffect(() => {
+    if (fixedDigits.length === 0) {
+      const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      const randomDigits = Array.from({ length: 5 }, () => 
+        digits[Math.floor(Math.random() * digits.length)]
+      )
+      setFixedDigits(randomDigits)
+    }
+  }, [fixedDigits])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -453,7 +466,8 @@ export default function ImageGeneration() {
           const gLoss = (4.0 - (currentEpoch / epochs) * 3.5 + Math.random() * 0.5).toFixed(4)
           const dLoss = (0.8 - (currentEpoch / epochs) * 0.3 + Math.random() * 0.2).toFixed(4)
           
-          // 生成当前epoch的图像数据（模拟噪声到清晰的过程）
+          // 生成当前epoch的图像数据（模拟从模糊到清晰的过程）
+          // 质量从0逐渐增加到1，但数字保持不变
           const imageQuality = currentEpoch / epochs
           const generatedImages = generateMNISTImages(imageQuality)
           
@@ -514,11 +528,10 @@ Training completed successfully!`
       trainEpoch()
     }
 
-    // 生成MNIST风格的图像数据
+    // 生成MNIST风格的图像数据 - 使用固定的数字，只改变质量
     const generateMNISTImages = (quality) => {
-      const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
       return Array.from({ length: 5 }, (_, i) => {
-        const digit = digits[Math.floor(Math.random() * digits.length)]
+        const digit = fixedDigits[i] || 0
         return {
           id: i,
           digit: digit,
@@ -528,7 +541,7 @@ Training completed successfully!`
       })
     }
 
-    // 生成数字图案数据
+        // 生成数字图案数据 - 根据质量从模糊到清晰
     const generateDigitPattern = (digit, quality) => {
       // 28x28像素的简化MNIST数字图案
       const patterns = {
@@ -646,12 +659,26 @@ Training completed successfully!`
       
       const pattern = patterns[digit] || patterns[0]
       
-      // 根据质量添加噪声
+      // 根据质量从模糊到清晰：质量越低，噪声越多，字符越模糊
       const noiseLevel = 1 - quality
+      const blurLevel = Math.max(0, noiseLevel * 2) // 增强模糊效果
+      
       return pattern.map(row => {
         return row.split('').map(char => {
-          if (Math.random() < noiseLevel * 0.3) {
-            return char === '█' ? ' ' : (Math.random() < 0.5 ? '█' : '▓')
+          // 根据质量决定是否添加噪声
+          if (Math.random() < noiseLevel * 0.5) {
+            // 质量低时，字符更容易被替换
+            if (char === '█') {
+              // 实心方块可能变成空格、半实心或保持实心
+              if (Math.random() < blurLevel * 0.7) {
+                return Math.random() < 0.5 ? ' ' : '▓'
+              }
+            } else if (char === ' ') {
+              // 空格可能变成半实心
+              if (Math.random() < blurLevel * 0.3) {
+                return '░'
+              }
+            }
           }
           return char
         }).join('')
@@ -669,7 +696,12 @@ Training completed successfully!`
     setSelectedBlock(null)
     setRunResults(null)
     setErrorMessage('')
-
+    // 重新生成固定的MNIST数字
+    const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    const randomDigits = Array.from({ length: 5 }, () => 
+      digits[Math.floor(Math.random() * digits.length)]
+    )
+    setFixedDigits(randomDigits)
   }, [])
 
 
